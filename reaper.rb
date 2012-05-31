@@ -12,12 +12,12 @@ end
 attr_reader :chunks
 
 def end_document
-	puts "the document has ended"
+	# puts "the document has ended"
 end
 
 def start_element name, attributes = []
 	@chunks <<  "<div class='#{name}'>"
-	puts attributes[0]
+	#puts attributes[0]
 end
 
 def end_element name
@@ -37,11 +37,11 @@ end
 IO.readlines('urls.txt').each do |url|
         uri = URI(url) 
         myfilename = File.basename(uri.path, ".xml")
-        myfile = File.new(myfilename + ".html", "w")
+        myfile = File.new("./output/" + myfilename + ".html", "w")
         
         myDoc = MyDocument.new
         parser = Nokogiri::XML::SAX::Parser.new(myDoc)
-        puts "Writing #{myfile}\n"
+        puts "Writing #{url}"
 
         parser.parse(open(url))
         
@@ -78,6 +78,7 @@ IO.readlines('urls.txt').each do |url|
 
 <div class="span8 offset1">
 END
+
         myfile.write header
         myfile.write myDoc.chunks
         footer = <<END
@@ -91,5 +92,6 @@ END
 </html>
 END
         myfile.write footer
+
        
 end
