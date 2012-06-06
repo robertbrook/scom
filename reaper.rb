@@ -16,16 +16,51 @@ def end_document
 end
 
 def start_element name, attributes = []
-	@chunks <<  "<div class='#{name}'>"
+        case name
+        when 'p','i','b','table','tr','td','ol','li','section'
+                @chunks <<  "\n\t<#{name}>"
+        when 'date'
+                @chunks <<  "\t<time>"
+        when 'lb'
+                @chunks <<  "\n<br><br>"
+        when 'quote'
+                @chunks <<  "\t<br><blockquote><p>"
+        when 'col'
+                @chunks <<  "\t<span class='label label-info column'>"
+        when 'image'
+                @chunks << '<span class="label imageref" title="' << attributes[0][1] << '">JPEG</span>'
+        when 'frontpage'
+                @chunks <<  "\n\t<div class='frontpage well'>"
+        else
+                @chunks <<  "\n\t<div class='#{name}'>"
+        end
+
+	
 	#puts attributes[0]
 end
 
 def end_element name
-    @chunks <<  "</div> <!-- #{name} -->"
+        case name
+        when 'p','i','b','table','tr','td','ol','li','section'
+                @chunks <<  "</#{name}>"
+        when 'date'
+                @chunks <<  "</time>"
+        when 'quote'
+                @chunks <<  "</p></blockquote>"
+        when 'col'
+                @chunks <<  "</span>"
+        when 'image'
+                @chunks <<  "<!-- #{name} -->"
+        when 'lb'
+                @chunks <<  "<!-- lb -->"
+        else
+                @chunks <<  "</div> <!-- #{name} -->"
+        end
+    
 end
 
 def comment string
-	@chunks << "<!-- " << string << " -->"
+	@chunks << "<!-- " << string << " -->\n"
 end
 
 def characters string
@@ -35,16 +70,15 @@ end
 end
 
 IO.readlines('urls.txt').each do |url|
+        
         uri = URI(url) 
         myfilename = File.basename(uri.path, ".xml")
         myfile = File.new("./output/" + myfilename + ".html", "w")
-        
         myDoc = MyDocument.new
         parser = Nokogiri::XML::SAX::Parser.new(myDoc)
-        puts "Writing #{url}"
 
         parser.parse(open(url))
-        
+        puts "Parsing #{url}"
         header = <<END
         <!DOCTYPE html>
 <html lang="en-GB">
@@ -59,16 +93,11 @@ IO.readlines('urls.txt').each do |url|
     <![endif]-->
     
     <style>
-    body {padding-top:3%;padding-bottom:3%;}
-    div.p {padding:1% 0;}
-    div.i {font-style:italic;}
-    div.b {font-weight:bold;}
+    body {padding:1em 0;}
     div.member {display:inline;font-weight:bold;}
     div.membercontribution {display:inline;}
-    div.col {float:right;padding-left:2%;}
-    div.col:before { content: "[Col. " }
-    div.col:after { content: "]" }
-	div.lb {padding:1% 0;}
+    span.column {float:right;margin-left:0.5em;}
+    span.imageref {margin-left:0.5em;float:right;}
     </style>
 </head>
 <body>
