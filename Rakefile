@@ -41,15 +41,17 @@ def start_element name, attributes = []
                 @chunks <<  "<span class='label label-info column' rel='tooltip' title='Column number'>Col. "
         when 'image'
                 @chunks << '<span class="label imageref" rel="tooltip" title="Image source: ' << attributes[0][1] << '">Image</span>'
-        when 'frontpage'
-                @chunks <<  "<div class='frontpage'>"
+        when 'frontpage','standing_committee','housecommons','hansard','debates'
+                @chunks <<  "<div class='#{name}'>"
         else
                 @chunks <<  "<div class='#{name}'><span class='label label-warning'>#{name}</span>
 "
         end
+        
+        if attributes.length > 0
+	        # puts attributes.inspect
+	end
 
-	
-	#puts attributes[0]
 end
 
 def end_element name
@@ -161,7 +163,7 @@ task :generate_html do
                         <div class="span9">
                         <div class="alert alert-info">
   				<h3 class="alert-heading">Committee Sitting HTML Preview</h3>
-  					<p>Original XML File: #{xml_file}.</p>
+  					<p>XML source: #{xml_file}</p>
   					<p>File generated: #{Time.now}</p>
 			</div>
 END
@@ -180,7 +182,6 @@ END
         myfile.write footer
 	end
 end
-
 
 
 
