@@ -84,7 +84,7 @@ end
 
 
 desc "Download XML inputs"
-task :download_xml do
+task :xml do
 	mkdir_p("./input/")
 	logger.info("Wrote /input/")
 	IO.readlines('urls.txt').each do |url|
@@ -95,7 +95,7 @@ task :download_xml do
 end
 
 desc "Generate HTML outputs"
-task :generate_html do
+task :html do
 	mkdir_p("./output/")
 	logger.info("Wrote /output/")
 	Dir.glob('./input/*.xml').each do |xml_file|
