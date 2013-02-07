@@ -1,13 +1,6 @@
 require 'rubygems'
 require 'nokogiri'
 require 'open-uri'
-require 'logger'
-
-logger = Logger.new(STDOUT)
-logger.level = Logger::DEBUG
-logger.formatter = proc do |severity, datetime, progname, msg|
-        "#{msg}\n"
-end
 
 class MyDocument < Nokogiri::XML::SAX::Document
 
@@ -91,26 +84,16 @@ end
 desc "Download XML inputs"
 task :xml do
 	mkdir_p("./input/")
-	logger.info("Wrote /input/")
-	Parallel.map(IO.readlines('urls.txt'), :in_threads=>30) do |url|
-				
-		oFile = File.open("./input/" + File.basename(url).chomp!, 'w')
-		logger.info("? #{url}")
-
+	IO.readlines('urls.txt') do |url|		
+		oFile = File.open("./input/" + File.basename(url).chomp!, 'w'
 		oFile.write(open(url).read)
-		logger.info("+ #{url}")
-
 		oFile.close
-		logger.info("- #{url}")
 	end
-
-
 end
 
 desc "Generate HTML outputs"
 task :html do
 	mkdir_p("./output/")
-	logger.info("Wrote /output/")
 	Dir.glob('./input/*.xml').each do |xml_file|
 		myfilename = File.basename(xml_file, ".xml")
 		myfilename_year = myfilename.split("-")[0][2..-1]
@@ -121,9 +104,6 @@ task :html do
 		myDoc = MyDocument.new
         	parser = Nokogiri::XML::SAX::Parser.new(myDoc)
         	parser.parse(open(xml_file))
-        
-        	logger.info("Parsed #{xml_file}")
-
         header = <<END
 <!DOCTYPE html>
 <html lang="en-GB">
