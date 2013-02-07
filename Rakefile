@@ -2,7 +2,6 @@ require 'rubygems'
 require 'nokogiri'
 require 'open-uri'
 require 'logger'
-require 'parallel'
 
 logger = Logger.new(STDOUT)
 logger.level = Logger::DEBUG
@@ -82,6 +81,10 @@ def characters string
 	@chunks << string
 end
 
+end
+
+task :default do
+	p "Hello world."
 end
 
 
